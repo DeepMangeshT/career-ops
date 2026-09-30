@@ -399,30 +399,6 @@ test('linkedin-join.mjs --help --bogus still errors', () => {
   assert.match(r.all, /unrecognized flag/i);
 });
 
-// cv-sync-check.mjs parsed no arguments before #3565, so a mistyped flag ran
-// the whole check suite and the caller had no way to discover the right
-// spelling. Its exit code is data-dependent (1 when cv.md is missing, which is
-// the normal state of a checkout), so the flag paths are asserted on their own
-// rather than through the bare-invocation expectation in test-all.mjs.
-test('cv-sync-check.mjs --help exits 0 and prints usage', () => {
-  const r = runScript('cv-sync-check.mjs', '--help');
-  assert.equal(r.status, 0, `cv-sync-check.mjs --help exited ${r.status}, want 0`);
-  assert.match(r.all, /Usage:/i, 'cv-sync-check.mjs --help printed no usage block');
-  assert.doesNotMatch(r.all, /sync check/i, '--help still ran the checks');
-});
-
-test('cv-sync-check.mjs -h exits 0 and prints usage', () => {
-  const r = runScript('cv-sync-check.mjs', '-h');
-  assert.equal(r.status, 0, `cv-sync-check.mjs -h exited ${r.status}, want 0`);
-  assert.match(r.all, /Usage:/i, 'cv-sync-check.mjs -h printed no usage block');
-});
-
-test('cv-sync-check.mjs --help --bogus still errors', () => {
-  const r = runScript('cv-sync-check.mjs', '--help', '--bogus');
-  assert.equal(r.status, 1, `cv-sync-check.mjs --help --bogus exited ${r.status}, want 1`);
-  assert.match(r.all, /unrecognized flag/i);
-});
-
 // rank-pipeline.mjs read its flags with hasFlag/flagValue and never looked for
 // one it did not know, so `--dryrun` did a live run and wrote annotations into
 // data/pipeline.md, the one outcome --dry-run exists to prevent (#4600). These
@@ -469,4 +445,28 @@ test('rank-pipeline.mjs --help exits 0 and prints usage', () => {
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+// cv-sync-check.mjs parsed no arguments before #3565, so a mistyped flag ran
+// the whole check suite and the caller had no way to discover the right
+// spelling. Its exit code is data-dependent (1 when cv.md is missing, which is
+// the normal state of a checkout), so the flag paths are asserted on their own
+// rather than through the bare-invocation expectation in test-all.mjs.
+test('cv-sync-check.mjs --help exits 0 and prints usage', () => {
+  const r = runScript('cv-sync-check.mjs', '--help');
+  assert.equal(r.status, 0, `cv-sync-check.mjs --help exited ${r.status}, want 0`);
+  assert.match(r.all, /Usage:/i, 'cv-sync-check.mjs --help printed no usage block');
+  assert.doesNotMatch(r.all, /sync check/i, '--help still ran the checks');
+});
+
+test('cv-sync-check.mjs -h exits 0 and prints usage', () => {
+  const r = runScript('cv-sync-check.mjs', '-h');
+  assert.equal(r.status, 0, `cv-sync-check.mjs -h exited ${r.status}, want 0`);
+  assert.match(r.all, /Usage:/i, 'cv-sync-check.mjs -h printed no usage block');
+});
+
+test('cv-sync-check.mjs --help --bogus still errors', () => {
+  const r = runScript('cv-sync-check.mjs', '--help', '--bogus');
+  assert.equal(r.status, 1, `cv-sync-check.mjs --help --bogus exited ${r.status}, want 1`);
+  assert.match(r.all, /unrecognized flag/i);
 });
